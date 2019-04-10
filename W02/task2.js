@@ -5,16 +5,20 @@ Vec3 = function(x,y,z){
 }
 
 function AreaOfTriangle(v0, v1, v2){
-  var l0 = distance(v0);
-  var l1 = distance(v1);
-  var l2 = distance(v2);
-  var s = (l0+l1+l2)/2;
+  var l0 = distance(v0,v1);
+  var l1 = distance(v1,v2);
+  var l2 = distance(v2,v0);
+  console.log(l0);
+  console.log(l1);
+  console.log(l2);
+  var s = parseFloat((l0+l1+l2)/2);
+  console.log(s);
   var S = Math.sqrt(s*(s-l0)*(s-l1)*(s-l2));
   return S;
 }
 
-function distance(v){
-  return Math.sqrt(Math.pow(v.x,2)+Math.pow(v.y,2)+Math.pow(v.z,2));
+function distance(v1,v2){
+  return Math.sqrt(Math.pow(v1.x-v2.x,2)+Math.pow(v1.y-v2.y,2)+Math.pow(v1.z-v2.z,2));
 }
 
 function view(){
@@ -30,8 +34,6 @@ function view(){
   var v0 = new Vec3(x0,y0,z0);
   var v1 = new Vec3(x1,y1,z1);
   var v2 = new Vec3(x2,y2,z2);
-  console.log(v0.x);
-  console.log(v0.y);
   var S = AreaOfTriangle(v0,v1,v2);
   console.log(S);
   document.getElementById("ans").innerHTML = "answer = "+S;
