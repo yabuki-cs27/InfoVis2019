@@ -32,7 +32,7 @@
      vec3 C = color;
      vec3 L = normalize( light_position - point_position.xyz );
      vec3 N = normalize( normal_vector );
-     vec3 V = normalize( -point_position.xyz );
+     vec3 V = normalize( cameraPosition - point_position.xyz );
      point_color = PhongReflection( C, L, N, V );
      gl_Position = projectionMatrix * point_position;
    }
