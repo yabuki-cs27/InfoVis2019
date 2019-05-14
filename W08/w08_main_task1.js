@@ -37,6 +37,7 @@ function main()
         0.8  // S2
     ];
 
+    var min = 0.1;
     var max = 0.8;
 
     // Create color map
@@ -84,9 +85,9 @@ function main()
     for ( var i = 0; i < nfaces; i++ )
     {
         var id = faces[i];
-        var S0 = parseInt(scalars[ id[0] ]*255/max);
-        var S1 = parseInt(scalars[ id[1] ]*255/max);
-        var S2 = parseInt(scalars[ id[2] ]*255/max);
+        var S0 = parseInt((scalars[ id[0] ]-min)*255/(max-min));
+        var S1 = parseInt((scalars[ id[1] ]-min)*255/(max-min));
+        var S2 = parseInt((scalars[ id[2] ]-min)*255/(max-min));
         console.log(S0+":"+S1+":"+S2);
         var C0 = new THREE.Color().setHex( cmap[ S0 ][1] );
         var C1 = new THREE.Color().setHex( cmap[ S1 ][1] );
