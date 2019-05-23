@@ -1,14 +1,18 @@
 function Isosurfaces( volume, isovalue )
 {
   var geometry = new THREE.Geometry();
-  var material = new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: THREE.FaceColors });
+  //var material = new THREE.MeshLambertMaterial({ color: 0xffffff, vertexColors: THREE.FaceColors });
   //console.log(document.getElementById("vert").innerHTML);
+  var material = new THREE.ShaderMaterial({
+      vertexColors: THREE.VertexColors,
+      vertexShader: document.getElementById('shader.vert').text,
+      fragmentShader: document.getElementById('shader.frag').text,
+  });
   var smin = volume.min_value;
   var smax = volume.max_value;
   isovalue = KVS.Clamp( isovalue, smin, smax );
-
   var lut = new KVS.MarchingCubesTable();
-  //console.log(lut);
+  console.log(lut);
   var cell_index = 0;
   var counter = 0;
   var cmap = [];
@@ -67,7 +71,6 @@ function Isosurfaces( volume, isovalue )
                   var v01 = interpolated_vertex( v0, v1, val[0],val[1] );
                   var v23 = interpolated_vertex( v2, v3, val[2],val[3] );
                   var v45 = interpolated_vertex( v4, v5, val[4],val[5] );
-
 
                   geometry.vertices.push( v01 );
                   geometry.vertices.push( v23 );

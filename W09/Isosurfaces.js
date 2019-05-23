@@ -53,6 +53,16 @@ function Isosurfaces( volume, isovalue )
                     var v4 = new THREE.Vector3( x + vid4[0], y + vid4[1], z + vid4[2] );
                     var v5 = new THREE.Vector3( x + vid5[0], y + vid5[1], z + vid5[2] );
 
+                    var lines = volume.resolution.x;
+                    var slices = volume.resolution.x * volume.resolution.y;
+                    var val = []
+                    val[0] = volume.values[cell_index+vid0[0]+vid0[1]*lines+vid0[2]*slices][0];
+                    val[1] = volume.values[cell_index+vid1[0]+vid1[1]*lines+vid1[2]*slices][0];
+                    val[2] = volume.values[cell_index+vid2[0]+vid2[1]*lines+vid2[2]*slices][0];
+                    val[3] = volume.values[cell_index+vid3[0]+vid3[1]*lines+vid3[2]*slices][0];
+                    val[4] = volume.values[cell_index+vid4[0]+vid4[1]*lines+vid4[2]*slices][0];
+                    val[5] = volume.values[cell_index+vid5[0]+vid5[1]*lines+vid5[2]*slices][0];
+
                     var v01 = interpolated_vertex( v0, v1, isovalue );
                     var v23 = interpolated_vertex( v2, v3, isovalue );
                     var v45 = interpolated_vertex( v4, v5, isovalue );
@@ -65,7 +75,18 @@ function Isosurfaces( volume, isovalue )
                     var id1 = counter++;
                     var id2 = counter++;
                     var face = new THREE.Face3( id0, id1, id2);
-                    face.color.set(new THREE.Color().setHex( cmap[volume.values[cell_index]][1] ));
+                    var averageval = 0;
+                    var count=0;
+                    for(var i=0;i<6;i++){
+                      if(val[i]>0){
+                        averageval+=val[i];
+                        count++;
+                      }
+                    }
+                    if(count>0){
+                      averageval = parseInt(averageval/count);
+                    }
+                    face.color.set(new THREE.Color().setHex( cmap[averageval][1] ));
                     geometry.faces.push(face);
                 }
             }
