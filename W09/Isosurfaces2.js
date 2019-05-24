@@ -56,17 +56,17 @@ function Isosurfaces( volume, isovalue )
 
                   var lines = volume.resolution.x;
                   var slices = volume.resolution.x * volume.resolution.y;
-                  var val = []
-                  val[0] = volume.values[cell_index+vid0[0]+vid0[1]*lines+vid0[2]*slices][0];
-                  val[1] = volume.values[cell_index+vid1[0]+vid1[1]*lines+vid1[2]*slices][0];
-                  val[2] = volume.values[cell_index+vid2[0]+vid2[1]*lines+vid2[2]*slices][0];
-                  val[3] = volume.values[cell_index+vid3[0]+vid3[1]*lines+vid3[2]*slices][0];
-                  val[4] = volume.values[cell_index+vid4[0]+vid4[1]*lines+vid4[2]*slices][0];
-                  val[5] = volume.values[cell_index+vid5[0]+vid5[1]*lines+vid5[2]*slices][0];
-                  //if(x==100)console.log(v0,v1,v2,v3,v4,v5);
-                  var v01 = interpolated_vertex( v0, v1, val[0],val[1] );
-                  var v23 = interpolated_vertex( v2, v3, val[2],val[3] );
-                  var v45 = interpolated_vertex( v4, v5, val[4],val[5] );
+                  var val = [];
+                  val[0] = volume.values[parseInt(v0.x+v0.y*lines+v0.z*slices)][0];
+                  val[1] = volume.values[parseInt(v1.x+v1.y*lines+v1.z*slices)][0];
+                  val[2] = volume.values[parseInt(v2.x+v2.y*lines+v2.z*slices)][0];
+                  val[3] = volume.values[parseInt(v3.x+v3.y*lines+v3.z*slices)][0];
+                  val[4] = volume.values[parseInt(v4.x+v4.y*lines+v4.z*slices)][0];
+                  val[5] = volume.values[parseInt(v5.x+v5.y*lines+v5.z*slices)][0];
+                  //if(x==100)console.log(val[0]+","+val[1]+","+val[2]+","+val[3]+","+val[4]+","+val[5]);
+                  var v01 = interpolated_vertex( v0, v1, val[0],val[1],isovalue );
+                  var v23 = interpolated_vertex( v2, v3, val[2],val[3],isovalue );
+                  var v45 = interpolated_vertex( v4, v5, val[4],val[5],isovalue );
 
 
                   geometry.vertices.push( v01 );
@@ -80,7 +80,7 @@ function Isosurfaces( volume, isovalue )
                   var averageval = 0;
                   var count=0;
                   for(var i=0;i<6;i++){
-                    if(val[i]>0){
+                    if(val[i]>isovalue){
                       averageval+=val[i];
                       count++;
                     }
@@ -143,8 +143,12 @@ function Isosurfaces( volume, isovalue )
         return index;
     }
 
-    function interpolated_vertex( v0, v1, s0,s1 )
+    function interpolated_vertex( v0, v1, s0,s1,s )
     {
-        return new THREE.Vector3().addVectors( v0.multiplyScalar(s0+1), v1.multiplyScalar(s1+1) ).divideScalar( s0+s1+2 );
+      if(s0>s1){
+        return new THREE.Vector3().addVectors( v0.multiplyScalar(s0-s), v1.multiplyScalar(s-s1) ).divideScalar( s0-s1 );
+      }else{
+        return new THREE.Vector3().addVectors( v0.multiplyScalar(s-s0), v1.multiplyScalar(s1-s) ).divideScalar( s1-s0 );
+      }
     }
 }
