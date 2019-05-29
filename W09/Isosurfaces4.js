@@ -156,9 +156,9 @@ function Isosurfaces( volume, isovalue )
     function interpolated_vertex( v0, v1, s0,s1,s )
     {
       if(s0>s1){
-        return new THREE.Vector3().addVectors( v0.multiplyScalar(s0-s), v1.multiplyScalar(s-s1) ).divideScalar( s0-s1 );
+        return new THREE.Vector3().addVectors( v0.multiplyScalar(s-s1), v1.multiplyScalar(s0-s) ).divideScalar( s0-s1 );
       }else{
-        return new THREE.Vector3().addVectors( v0.multiplyScalar(s-s0), v1.multiplyScalar(s1-s) ).divideScalar( s1-s0 );
+        return new THREE.Vector3().addVectors( v0.multiplyScalar(s1-s), v1.multiplyScalar(s-s0) ).divideScalar( s1-s0 );
       }
     }
 }
