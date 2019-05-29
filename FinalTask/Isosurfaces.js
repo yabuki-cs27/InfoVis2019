@@ -18,12 +18,12 @@ function Isosurfaces( volume, isovalue )
   var cmap = [];
   for ( var i = 0; i < 256; i++ )
   {
-    var S = i / 255.0; // [0,1]
-    var R = Math.max( Math.cos( ( S - 1.0 ) * Math.PI ), 0.0 );
-    var G = Math.max( Math.cos( ( S - 0.5 ) * Math.PI ), 0.0 );
-    var B = Math.max( Math.cos( S * Math.PI ), 0.0 );
-    var color = new THREE.Color( R, G, B );
-    cmap.push( [ S, '0x' + color.getHexString() ] );
+      var S = i / 255.0; // [0,1]
+      var R = 1;
+      var G = (255.0 - i)/255;
+      var B = (255.0 - i)/255;
+      var color = new THREE.Color( R, G, B );
+      cmap.push( [ S, '0x' + color.getHexString() ] );
   }
   var lut2 = new THREE.Lut( 'rainbow', cmap.length );
   lut2.addColorMap( 'mycolormap', cmap );
@@ -33,24 +33,16 @@ function Isosurfaces( volume, isovalue )
       {
           for ( var x = 0; x < volume.resolution.x - 1; x++ )
           {
-            //a+d=0,c*0.5+d=0,b+c+d=0;a+b+c+0.5+d=0
-            //a=-d,c=-2d,b=d;
-              //cell_index++;
-              var indices = cell_node_indices( x,y,z );
-              var a = 1/volume.resolution.x;
-              var b = -1/volume.resolution.y;
-              var c = (1/volume.resolution.z)*2;
-              var d = -1;
-              var index = table_index( indices,a,b,c,d );
-
+              var indices = cell_node_indices( cell_index++ );
+              var index = table_index( indices );
               if ( index == 0 ) { continue; }
               if ( index == 255 ) { continue; }
 
               for ( var j = 0; lut.edgeID[index][j] != -1; j += 3 )
               {
                   var eid0 = lut.edgeID[index][j];
-                  var eid1 = lut.edgeID[index][j+1];
-                  var eid2 = lut.edgeID[index][j+2];
+                  var eid1 = lut.edgeID[index][j+2];
+                  var eid2 = lut.edgeID[index][j+1];
 
                   var vid0 = lut.vertexID[eid0][0];
                   var vid1 = lut.vertexID[eid0][1];
@@ -75,9 +67,10 @@ function Isosurfaces( volume, isovalue )
                   val[3] = volume.values[parseInt(v3.x+v3.y*lines+v3.z*slices)][0];
                   val[4] = volume.values[parseInt(v4.x+v4.y*lines+v4.z*slices)][0];
                   val[5] = volume.values[parseInt(v5.x+v5.y*lines+v5.z*slices)][0];
-                  var v01 = interpolated_vertex( v0, v1, v0.x*a+v0.y*b+v0.z*c+d, v1.x*a+v1.y*b+v1.z*c+d , 0);
-                  var v23 = interpolated_vertex( v2, v3, v2.x*a+v2.y*b+v2.z*c+d, v3.x*a+v3.y*b+v3.z*c+d , 0);
-                  var v45 = interpolated_vertex( v4, v5, v4.x*a+v4.y*b+v4.z*c+d, v5.x*a+v5.y*b+v5.z*c+d , 0);
+                  //if(x==100)console.log(v0,v1,v2,v3,v4,v5);
+                  var v01 = interpolated_vertex( v0, v1, val[0],val[1],isovalue );
+                  var v23 = interpolated_vertex( v2, v3, val[2],val[3],isovalue );
+                  var v45 = interpolated_vertex( v4, v5, val[4],val[5],isovalue );
 
                   geometry.vertices.push( v01 );
                   geometry.vertices.push( v23 );
@@ -90,7 +83,7 @@ function Isosurfaces( volume, isovalue )
                   var averageval = 0;
                   var count=0;
                   for(var i=0;i<6;i++){
-                    if(val[i]>0){
+                    if(val[i]>isovalue){
                       averageval+=val[i];
                       count++;
                     }
@@ -98,7 +91,6 @@ function Isosurfaces( volume, isovalue )
                   if(count>0){
                     averageval = parseInt(averageval/count);
                   }
-                  //face.color.set(new THREE.Color().setHex( cmap[volume.values[cell_index][0]][1] ));
                   face.color.set(new THREE.Color().setHex( cmap[averageval][1] ));
                   geometry.faces.push(face);
               }
@@ -112,43 +104,44 @@ function Isosurfaces( volume, isovalue )
 
     return new THREE.Mesh( geometry, material );
 
-    function cell_node_indices( x,y,z )
+
+    function cell_node_indices( cell_index )
     {
         var lines = volume.resolution.x;
         var slices = volume.resolution.x * volume.resolution.y;
 
-        var id0 = new THREE.Vector3(x,y,z);
-        var id1 = new THREE.Vector3(x+1,y,z);
-        var id2 = new THREE.Vector3(x+1,y+1,z);
-        var id3 = new THREE.Vector3(x,y+1,z);
-        var id4 = new THREE.Vector3(x,y,z+1);
-        var id5 = new THREE.Vector3(x+1,y,z+1);
-        var id6 = new THREE.Vector3(x+1,y+1,z+1);
-        var id7 = new THREE.Vector3(x,y+1,z+1);
+        var id0 = cell_index;
+        var id1 = id0 + 1;
+        var id2 = id1 + lines;
+        var id3 = id0 + lines;
+        var id4 = id0 + slices;
+        var id5 = id1 + slices;
+        var id6 = id2 + slices;
+        var id7 = id3 + slices;
 
         return [ id0, id1, id2, id3, id4, id5, id6, id7 ];
     }
 
-    function table_index( indices,a,b,c,d )
+    function table_index( indices )
     {
-        var s0 = a*indices[0].x+b*indices[0].y+c*indices[0].z+d;
-        var s1 = a*indices[1].x+b*indices[1].y+c*indices[1].z+d;
-        var s2 = a*indices[2].x+b*indices[2].y+c*indices[2].z+d;
-        var s3 = a*indices[3].x+b*indices[3].y+c*indices[3].z+d;
-        var s4 = a*indices[4].x+b*indices[4].y+c*indices[4].z+d;
-        var s5 = a*indices[5].x+b*indices[5].y+c*indices[5].z+d;
-        var s6 = a*indices[6].x+b*indices[6].y+c*indices[6].z+d;
-        var s7 = a*indices[7].x+b*indices[7].y+c*indices[7].z+d;
+        var s0 = volume.values[ indices[0] ][0];
+        var s1 = volume.values[ indices[1] ][0];
+        var s2 = volume.values[ indices[2] ][0];
+        var s3 = volume.values[ indices[3] ][0];
+        var s4 = volume.values[ indices[4] ][0];
+        var s5 = volume.values[ indices[5] ][0];
+        var s6 = volume.values[ indices[6] ][0];
+        var s7 = volume.values[ indices[7] ][0];
 
         var index = 0;
-        if ( s0 > 0 ) { index |=   1; }
-        if ( s1 > 0 ) { index |=   2; }
-        if ( s2 > 0 ) { index |=   4; }
-        if ( s3 > 0 ) { index |=   8; }
-        if ( s4 > 0 ) { index |=  16; }
-        if ( s5 > 0 ) { index |=  32; }
-        if ( s6 > 0 ) { index |=  64; }
-        if ( s7 > 0 ) { index |= 128; }
+        if ( s0 > isovalue ) { index |=   1; }
+        if ( s1 > isovalue ) { index |=   2; }
+        if ( s2 > isovalue ) { index |=   4; }
+        if ( s3 > isovalue ) { index |=   8; }
+        if ( s4 > isovalue ) { index |=  16; }
+        if ( s5 > isovalue ) { index |=  32; }
+        if ( s6 > isovalue ) { index |=  64; }
+        if ( s7 > isovalue ) { index |= 128; }
 
         return index;
     }
