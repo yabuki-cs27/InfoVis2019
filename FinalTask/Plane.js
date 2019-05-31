@@ -87,6 +87,7 @@ function Plane( volume, isovalue,a1,b1,c1,d1 )
                   var id1 = counter++;
                   var id2 = counter++;
                   var face = new THREE.Face3( id0, id1, id2);
+                  var face2 = new THREE.Face3( id0, id2, id1);
                   var averageval = 0;
                   var count=0;
                   for(var i=0;i<6;i++){
@@ -100,7 +101,9 @@ function Plane( volume, isovalue,a1,b1,c1,d1 )
                   }
                   //face.color.set(new THREE.Color().setHex( cmap[volume.values[cell_index][0]][1] ));
                   face.color.set(new THREE.Color().setHex( cmap[averageval][1] ));
+                  face2.color.set(new THREE.Color().setHex( cmap[averageval][1] ));
                   geometry.faces.push(face);
+                  geometry.faces.push(face2);
               }
           }
           cell_index++;

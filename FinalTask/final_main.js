@@ -1,5 +1,5 @@
 var isovalue = 128;
-var volume = new KVS.LobsterData();
+var volume = new Neghip();
 var screen = new KVS.THREEScreen();
 var style =1;
 
@@ -61,6 +61,7 @@ function setStyle(){
     '<label>b</label><input type="number" id = "value2" value = -1></input><br />'+
     '<label>c</label><input type="number" id = "value3" value = 2></input><br />'+
     '<label>d</label><input type="number" id = "value4" value = -1></input><br />';*/
+    '<a>index</a><br />'+
     '<label>a</label>'+
     '<input type="range" min="-3" max="3" step="0.1" value="1"'+
     'id="value1" onchange="setvalue(1)"/>'+
@@ -74,10 +75,11 @@ function setStyle(){
     'id="value3" onchange="setvalue(3)"/>'+
     '<span id = "a3">2</span><br />'+
     '<label>d</label>'+
-    '<input type="range" min="-3" max="3" step="0.1" value="-1"'+
+    '<input type="range" min="-2" max="2" step="0.1" value="-1"'+
     'id="value4" onchange="setvalue(4)"/>'+
     '<span id = "a4">-1</span><br />';
   }
+  review();
 }
 
 function setvalue(i){
