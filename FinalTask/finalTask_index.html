@@ -1,8 +1,9 @@
 <html>
-    <head>
-	<title>final task </title>
-    </head>
-    <body style="margin:0">
+  <head>
+	   <title>final task </title>
+  </head>
+  <body style="margin:0">
+    <meta charset="UTF-8">
 	<script src="three.min.js"></script>
 	<script src="TrackballControls.js"></script>
 	<script src="https://threejs.org/examples/js/math/Lut.js"></script>
@@ -13,6 +14,7 @@
 	<script src="Bounds.js"></script>
 	<script src="Isosurfaces.js"></script>
   <script src="Plane.js"></script>
+  <script src="IsoPlane.js"></script>
 	<script src="final_main.js"></script>
   <script type="x-shader/x-vertex" id="shader.vert">
    varying vec3 point_color;
@@ -49,13 +51,35 @@
     gl_FragColor = vec4( point_color, 1.0 );
   }
 	</script>
-  <div id="display" style="width: 80%; float: left;"></div>
-  <div id="controller" style="width:20%; float:left;">
+  <div id = "tytle" style="width:40%;float:left;">
+    <h1>情報可視化論　最終課題</h1>
+    <h2>学籍番号192x221x 矢吹直也</h2>
+    <h3>使用したデータセット</h3>
+    <a> neghip データセット</a><br />
+    <h3>可視化方法</h3>
+    <a>1.isovalue</a><br />
+    <a>ある値の点を面でつないだものを可視化</a><br/>
+    <a>値の高い点が近い場所ほど面の色が赤くなる</a><br/>
+    <a>isovalueの値を0~255の間で変更することが可能</a><br/><br/>
+    <a>2.slice plane</a><br />
+    <a>平面で切った場合のその面の様子を可視化</a><br/>
+    <a>値が高い場所ほど赤くなり、低い場所は白で表示される</a><br/>
+    <a>平面の方程式:ax+by+cz+dにおける係数a,b,c,dを-3～3の間で変更することが可能</a><br/><br/>
+    <a>3.isovalue & slice plane</a><br />
+    <a>二つを組み合わせ、ある値の点を面でつなぎ、それを平面で切ったものを可視化</a><br />
+    <a>上記の要素に加え、面の上側か下側かをinvertで選択可能</a><br/>
+    <h3>結果</h3>
+    <a>右のようになった</a><br />
+    <a>どの手法で可視化するかはview styleから選択することができるようになっている</a><br/>
+  </div>
+  <div id="display" style="width: 50%;height: 100%; float: left;"></div>
+  <div id="controller" style="width:10%;height: 100%; float:left;">
     <label id = "label2"> view style </label>
     <form>
       <select id="selectStyle" name="view type">
         <option value="1" selected>isovalue</option>
         <option value="2">plane</option>
+        <option value="3">plane+isovalue</option>
       </select>
     </form>
     <button onclick="setStyle();">change</button>
@@ -68,6 +92,9 @@
     </div>
     <button id="change-isovalue-button" style="font-family=Arial;" onclick="review()">
       Apply</button>
+  </div>
+  <div id = "report">
+
   </div>
   <script>
    main();
