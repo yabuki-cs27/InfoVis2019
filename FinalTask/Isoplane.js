@@ -19,7 +19,7 @@ function IsoPlane( volume, isovalue,a1,b1,c1,d1 )
   var isPlane = false;
   for ( var i = 0; i < 256; i++ )
   {
-      var S = i / 255.0; // [0,1]
+      var S = i / 255.0; 
       var R = 1;
       var G = (255.0 - i)/255;
       var B = (255.0 - i)/255;
